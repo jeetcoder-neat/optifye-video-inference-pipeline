@@ -50,12 +50,12 @@ while True:
         continue
 
     # Encode frame → JPEG
-    success, jpeg = cv2.imencode(".jpg", frame)
+    frame = cv2.resize(frame, (320, 180))   # MASSIVE size drop
+    success, jpeg = cv2.imencode(".jpg", frame,  [int(cv2.IMWRITE_JPEG_QUALITY), 50])
     if not success:
         print("⚠️ JPEG encode failed, skipping frame")
         continue
     
-    frame = cv2.resize(frame, (640, 360))
     encoded = base64.b64encode(jpeg.tobytes()).decode("utf-8")
 
     batch.append({
@@ -73,11 +73,12 @@ while True:
             "frames": batch,
         }
 
-        producer.send(TOPIC, payload)
+        producer.send(TOPIC, payload).get(timeout=10)
         producer.flush()
 
         print(f"📤 Published batch ending at frame {frame_id}")
         batch = []
+        producer.flush()
 
     time.sleep(FRAME_SLEEP)
 

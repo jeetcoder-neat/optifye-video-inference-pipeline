@@ -15,7 +15,7 @@ BROKERS = [
 ]
 
 # IMPORTANT — we will update this once inference is live
-INFERENCE_URL = "http://inference:8080/infer"
+INFERENCE_URL = "http://15.207.51.5:8080/infer"
 
 BUCKET = "optifye-inference-output-382748270280"
 
@@ -25,14 +25,14 @@ consumer = KafkaConsumer(
     TOPIC,
     bootstrap_servers=BROKERS,
     value_deserializer=lambda m: json.loads(m.decode("utf-8")),
-    auto_offset_reset="latest",
-    group_id="inference-group",
+    auto_offset_reset="earliest",
 )
 
 print("🚀 Consumer started")
 
 for msg in consumer:
     batch = msg.value
+    print("Message Received.")
 
     try:
         response = requests.post(
