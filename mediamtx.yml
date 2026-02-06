@@ -1,7 +1,0 @@
-logLevel: info
-
-paths:
-  video:
-    source: publisher
-    disablePublisherOverride: yes
-
