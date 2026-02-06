@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postprocessor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postprocessor
+  template:
+    metadata:
+      labels:
+        app: postprocessor
+    spec:
+      containers:
+      - name: postprocessor
+        image: <ECR_POSTPROCESS_IMAGE>
+        ports:
+        - containerPort: 9000
+        env:
+        - name: S3_BUCKET
+          value: "<S3_BUCKET>"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postprocessor
+spec:
+  selector:
+    app: postprocessor
+  ports:
+  - port: 9000
+    targetPort: 9000

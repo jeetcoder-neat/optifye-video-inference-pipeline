@@ -1,0 +1,47 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+import base64
+import boto3
+import cv2
+import numpy as np
+import time
+import os
+
+app = FastAPI()
+
+s3 = boto3.client("s3")
+BUCKET = os.environ["S3_BUCKET"]
+
+class Payload(BaseModel):
+    frame: dict
+    boxes: list
+
+@app.post("/process")
+def process(data: Payload):
+    img_bytes = base64.b64decode(data.frame["image"])
+    img = cv2.imdecode(
+        np.frombuffer(img_bytes, np.uint8),
+        cv2.IMREAD_COLOR
+    )
+
+    for box in data.boxes:
+        x1, y1, x2, y2, *_ = box
+        cv2.rectangle(
+            img,
+            (int(x1), int(y1)),
+            (int(x2), int(y2)),
+            (0, 255, 0),
+            2
+        )
+
+    _, buf = cv2.imencode(".jpg", img)
+
+    key = f"output/{int(time.time())}.jpg"
+    s3.put_object(
+        Bucket=BUCKET,
+        Key=key,
+        Body=buf.tobytes(),
+        ContentType="image/jpeg"
+    )
+
+    return {"status": "uploaded", "key": key}
