@@ -15,7 +15,7 @@ BROKERS = [
 ]
 
 # IMPORTANT — we will update this once inference is live
-INFERENCE_URL = "http://13.232.160.83:8080/infer"
+INFERENCE_URL = "http://65.2.147.42:8080/infer"
 
 BUCKET = "optifye-inference-output-382748270280"
 
