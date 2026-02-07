@@ -34,7 +34,7 @@ print("🚀 Consumer started")
 
 for msg in consumer:
     batch = msg.value
-    print(batch)
+    print(batch.keys())
     stream_type = batch["stream_type"]
     print(f"Message Received of type {stream_type}")
 
