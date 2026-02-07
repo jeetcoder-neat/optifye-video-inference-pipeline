@@ -62,7 +62,7 @@ for msg in consumer:
 
         _, encoded = cv2.imencode(".jpg", img)
 
-        key = f"frame-{int(time.time())}.jpg"
+        key = f"frame-{frame_data['frame_id']}-{int(time.time())}.jpg"
 
         s3.put_object(
             Bucket=BUCKET,
