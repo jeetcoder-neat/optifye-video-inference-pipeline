@@ -15,6 +15,7 @@ KAFKA_BROKERS = [
 ]
 
 TOPIC = "video-stream-1"
+
 BATCH_SIZE = 25
 FRAME_SLEEP = 0.03  # ~30 FPS
 
@@ -71,10 +72,19 @@ while True:
         payload = {
             "batch_size": BATCH_SIZE,
             "frames": batch,
+            "stream_type": "type_a"
         }
-
         producer.send(TOPIC, payload).get(timeout=10)
+
+        payload = {
+            "batch_size": BATCH_SIZE,
+            "frames": batch,
+            "stream_type": "type_b"
+        }
+        producer.send(TOPIC, payload).get(timeout=10)
+
         producer.flush()
+
 
         print(f"📤 Published batch ending at frame {frame_id}")
         batch = []

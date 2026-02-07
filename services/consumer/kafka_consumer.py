@@ -18,6 +18,7 @@ BROKERS = [
 INFERENCE_URL = "http://3.110.80.137:8080/infer"
 
 BUCKET = "optifye-inference-output-382748270280"
+SECONDARY_BUCKET = "optifye-inference-output-secondary-382748270280"
 
 s3 = boto3.client("s3")
 
@@ -33,7 +34,8 @@ print("🚀 Consumer started")
 
 for msg in consumer:
     batch = msg.value
-    print("Message Received.")
+    stream_type = msg.stream_type
+    print(f"Message Received of type {stream_type}")
 
     try:
         response = requests.post(
@@ -64,12 +66,20 @@ for msg in consumer:
 
         key = f"frame-{frame_data['frame_id']}-{int(time.time())}.jpg"
 
-        s3.put_object(
-            Bucket=BUCKET,
-            Key=key,
-            Body=encoded.tobytes(),
-            ContentType="image/jpeg"
-        )
+        if stream_type == "stream_a":
+            s3.put_object(
+                Bucket=BUCKET,
+                Key=key,
+                Body=encoded.tobytes(),
+                ContentType="image/jpeg"
+            )
+        else:
+            s3.put_object(
+                Bucket=SECONDARY_BUCKET,
+                Key=key,
+                Body=encoded.tobytes(),
+                ContentType="image/jpeg"
+            )
 
         print(f"✅ Uploaded {key}")
 
