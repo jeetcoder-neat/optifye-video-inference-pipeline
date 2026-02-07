@@ -24,7 +24,7 @@ def infer(payload: dict):
             cv2.IMREAD_COLOR
         )
 
-        # Crash protection (VERY important)
+        # Crash protection
         if img is None:
             continue
 
@@ -43,9 +43,12 @@ def infer(payload: dict):
                 img,
                 (x1, y1),
                 (x2, y2),
-                (0, 255, 0),   # bright green
-                4              # thick so it's visible in S3
+                (0, 255, 0),
+                4
             )
+
+            # ✅ MINIMAL LOG
+            print(f"[INFER] Rectangle drawn on frame_id={frame['frame_id']}")
 
             boxes.append({
                 "x": x1,
@@ -58,7 +61,6 @@ def infer(payload: dict):
 
         # Encode annotated frame
         _, buffer = cv2.imencode(".jpg", img)
-
         encoded_img = base64.b64encode(buffer).decode("utf-8")
 
         results.append({
