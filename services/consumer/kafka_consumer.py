@@ -27,7 +27,7 @@ consumer = KafkaConsumer(
     bootstrap_servers=BROKERS,
     value_deserializer=lambda m: json.loads(m.decode("utf-8")),
     auto_offset_reset="latest",
-    group_id="demo-group-live"
+    group_id="new-demo-group"
 )
 
 print("🚀 Consumer started")
